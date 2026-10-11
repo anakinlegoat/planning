@@ -244,38 +244,6 @@
       margin: 0;
     }
 
-    .quick-add {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      padding: 12px 14px;
-      background: var(--panel-strong);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-    }
-
-    .quick-add input[type="text"] {
-      flex: 1 1 220px;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      background: transparent;
-      border-radius: 10px;
-      padding: 9px 12px;
-      color: var(--ink);
-    }
-
-    .quick-add select {
-      min-width: 140px;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      background: transparent;
-      border-radius: 10px;
-      padding: 9px 12px;
-      color: var(--ink);
-    }
-
     .alert {
       display: flex;
       flex-wrap: wrap;
@@ -397,6 +365,13 @@
       border-radius: 14px;
       padding: 12px 10px;
       min-height: 220px;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .week-day:hover {
+      border-color: var(--accent);
+      box-shadow: 0 10px 18px rgba(31,111,143,0.08);
     }
 
     .week-day.selected {
@@ -460,6 +435,76 @@
       font-size: 12px;
     }
 
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 17, 24, 0.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 30;
+    }
+
+    .modal {
+      width: min(480px, 100%);
+      background: var(--panel-strong);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .modal h3 {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .modal-row > * {
+      flex: 1 1 150px;
+    }
+
+    .modal label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .modal input, .modal select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: var(--ink);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
     .foot {
       display: flex;
       flex-wrap: wrap;
@@ -510,18 +555,18 @@
       .summary { align-items: stretch; }
       .remind { flex: 1 1 100%; justify-content: center; }
       .week-grid { grid-template-columns: 1fr; }
-      .quick-add { flex-direction: column; align-items: stretch; }
-      .quick-add input[type="text"], .quick-add select, .quick-add .btn { width: 100%; }
+      .modal-actions { flex-direction: column-reverse; }
+      .modal-actions .btn { width: 100%; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .progress-fill, .btn { transition: none; }
+      .progress-fill, .btn, .week-day { transition: none; }
     }
 
     @media print {
       body { background: white; padding: 0; }
-      .alert, .controls, .remind, .actions, .chip, #themeToggle, .progress-panel, .quick-add { display: none !important; }
+      .alert, .controls, .remind, .actions, .chip, #themeToggle, .progress-panel, .modal-backdrop { display: none !important; }
       .top, .sheet { box-shadow: none; border-color: #ccc; }
       .wrap { max-width: 100%; }
     }
@@ -565,17 +610,6 @@
 
         <label class="remind"><input type="checkbox" id="remind"> Rappel à chaque changement d’heure</label>
       </div>
-
-      <div class="quick-add" id="quickAddBox">
-        <input type="text" id="quickTaskInput" placeholder="Ajouter une tâche rapide..." aria-label="Ajouter une tâche rapide">
-        <select id="quickPrioritySelect" aria-label="Priorité de la tâche rapide">
-          <option value="">Priorité</option>
-          <option value="Haute">Haute</option>
-          <option value="Moyenne">Moyenne</option>
-          <option value="Basse">Basse</option>
-        </select>
-        <button type="button" class="btn primary" id="quickAddBtn">Ajouter</button>
-      </div>
     </div>
 
     <div class="alert" id="alert" role="alert" hidden>
@@ -606,6 +640,44 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="taskModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+      <h3 id="taskModalTitle">Ajouter une tâche</h3>
+      <div class="modal-form">
+        <div>
+          <label for="modalTaskDate">Jour</label>
+          <input type="text" id="modalTaskDate" readonly>
+        </div>
+
+        <div class="modal-row">
+          <div>
+            <label for="modalTaskName">Tâche</label>
+            <input type="text" id="modalTaskName" placeholder="Rendez-vous, réunion, appel...">
+          </div>
+          <div>
+            <label for="modalTaskHour">Heure</label>
+            <select id="modalTaskHour"></select>
+          </div>
+        </div>
+
+        <div>
+          <label for="modalTaskPriority">Priorité</label>
+          <select id="modalTaskPriority">
+            <option value="">Choisir la priorité</option>
+            <option value="Haute">Haute</option>
+            <option value="Moyenne">Moyenne</option>
+            <option value="Basse">Basse</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn" id="modalCancelBtn">Annuler</button>
+          <button type="button" class="btn primary" id="modalSaveBtn">Ajouter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       var START = 6;
@@ -616,6 +688,7 @@
       var audioCtx = null;
       var wakeLock = null;
       var viewMode = 'day';
+      var modalTargetDay = null;
 
       function pad(n) {
         return String(n).padStart(2, '0');
@@ -638,6 +711,71 @@
         d.setDate(d.getDate() - day);
         d.setHours(0,0,0,0);
         return d;
+      }
+
+      function fillHourSelect() {
+        var select = byId('modalTaskHour');
+        var opts = '';
+        for (var h = START; h <= END; h++) {
+          opts += '<option value="' + h + '">' + pad(h) + 'h</option>';
+        }
+        select.innerHTML = opts;
+      }
+
+      function openTaskModal(dayKey) {
+        modalTargetDay = dayKey;
+        byId('modalTaskDate').value = parseKey(dayKey).toLocaleDateString('fr-FR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        byId('modalTaskName').value = '';
+        byId('modalTaskPriority').value = '';
+        byId('taskModal').hidden = false;
+        byId('modalTaskName').focus();
+      }
+
+      function closeTaskModal() {
+        byId('taskModal').hidden = true;
+        byId('modalTaskName').value = '';
+        byId('modalTaskPriority').value = '';
+        modalTargetDay = null;
+      }
+
+      function saveTaskFromModal() {
+        var text = byId('modalTaskName').value.trim();
+        if (!text || !modalTargetDay) {
+          setStatus('Remplis le nom de la tâche');
+          byId('modalTaskName').focus();
+          return;
+        }
+
+        var hour = Number(byId('modalTaskHour').value);
+        var priority = byId('modalTaskPriority').value;
+        var data = loadDay(modalTargetDay);
+
+        if (Number.isNaN(hour) || hour < START || hour > END) {
+          hour = START;
+        }
+
+        data['h' + hour] = {
+          a: text,
+          l: '',
+          p: priority,
+          d: false,
+          n: 'Ajoutée depuis la semaine'
+        };
+
+        saveDay(modalTargetDay, data);
+        setStatus('Tâche ajoutée');
+        closeTaskModal();
+
+        if (dateKey === modalTargetDay) {
+          setData(data);
+        } else {
+          renderWeekView();
+        }
       }
 
       function buildRows() {
@@ -823,48 +961,6 @@
         refreshVisuals();
       }
 
-      function quickAddTask() {
-        var input = byId('quickTaskInput');
-        var priority = byId('quickPrioritySelect').value;
-        var text = input.value.trim();
-
-        if (!text) {
-          setStatus('Écris une tâche à ajouter');
-          input.focus();
-          return;
-        }
-
-        var startHour = new Date().getHours();
-        var slot = -1;
-
-        for (var h = START; h <= END; h++) {
-          var idA = 'a-' + h;
-          var current = byId(idA).value.trim();
-          if (!current) {
-            slot = h;
-            break;
-          }
-        }
-
-        if (slot === -1) {
-          slot = Math.max(START, Math.min(END, startHour || 9));
-          if (!byId('a-' + slot)) {
-            slot = START;
-          }
-        }
-
-        byId('a-' + slot).value = text;
-        if (priority) byId('p-' + slot).value = priority;
-        byId('n-' + slot).value = 'Ajoutée rapidement';
-
-        refreshVisuals();
-        persistNow();
-        input.value = '';
-        byId('quickPrioritySelect').value = '';
-        input.focus();
-        setStatus('Tâche ajoutée');
-      }
-
       function ensureAudio() {
         try {
           if (!audioCtx) {
@@ -972,7 +1068,7 @@
             }
           }
 
-          html += '<div class="week-day' + (key === dateKey ? ' selected' : '') + '">';
+          html += '<div class="week-day' + (key === dateKey ? ' selected' : '') + '" data-day="' + key + '">';
           html += '<div class="week-title"><span>' + current.toLocaleDateString('fr-FR', { weekday: 'short' }) + '</span><span class="week-date">' + current.getDate() + '</span></div>';
           if (!items.length) {
             html += '<div class="week-empty">Vide</div>';
@@ -989,6 +1085,11 @@
         }
 
         container.innerHTML = html;
+        container.querySelectorAll('.week-day').forEach(function (day) {
+          day.addEventListener('click', function () {
+            openTaskModal(this.dataset.day);
+          });
+        });
       }
 
       function renderCurrentView() {
@@ -1031,10 +1132,6 @@
       byId('addSlot').addEventListener('click', addSlot);
       byId('removeSlot').addEventListener('click', removeSlot);
       byId('printBtn').addEventListener('click', function () { window.print(); });
-      byId('quickAddBtn').addEventListener('click', quickAddTask);
-      byId('quickTaskInput').addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') quickAddTask();
-      });
 
       document.querySelectorAll('.view-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -1042,6 +1139,15 @@
           renderCurrentView();
           showDate();
         });
+      });
+
+      byId('modalCancelBtn').addEventListener('click', closeTaskModal);
+      byId('modalSaveBtn').addEventListener('click', saveTaskFromModal);
+      byId('taskModal').addEventListener('click', function (event) {
+        if (event.target === byId('taskModal')) closeTaskModal();
+      });
+      byId('modalTaskName').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') saveTaskFromModal();
       });
 
       var clearTimer = null;
@@ -1091,6 +1197,7 @@
 
       setInterval(tickReminder, 15000);
       initTheme();
+      fillHourSelect();
       buildRows();
       showDate();
       renderCurrentView();
