@@ -3,50 +3,47 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Planning de la journée heure par heure, avec rappel à chaque changement d'heure.">
-  <title>Planning du jour</title>
+  <meta name="description" content="Planning du jour premium, hour by hour, avec rappel automatique et impression." />
+  <title>Planning premium</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@600;700;800&display=swap">
   <style>
     :root {
-      --bg: #eef5f8;
-      --bg-2: #f9fbfc;
-      --surface: rgba(255, 255, 255, 0.88);
-      --surface-strong: #ffffff;
-      --ink: #17232d;
-      --muted: #586a78;
-      --line: #d9e4ea;
-      --shadow: 0 18px 48px rgba(23, 35, 45, 0.08);
-      --accent: #236d8d;
-      --accent-strong: #174d66;
-      --accent-soft: #e2f2f8;
-      --now: #fff5c9;
-      --hi: #b23735;
-      --mid: #b07619;
-      --lo: #2f8f63;
-      --success: #2d8c6c;
-      --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
-      --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --bg: #eef5fb;
+      --bg-2: #f9fbff;
+      --panel: rgba(255,255,255,0.84);
+      --panel-strong: #ffffff;
+      --ink: #163042;
+      --muted: #5e7282;
+      --line: #dfeaf1;
+      --accent: #1f6f8f;
+      --accent-2: #2b84a9;
+      --accent-soft: #e3f3fb;
+      --success: #2e8f67;
+      --warning: #f7d279;
+      --danger: #d64b4b;
+      --shadow: 0 18px 40px rgba(17, 40, 56, 0.12);
+      --radius: 18px;
+      --font-display: "Bricolage Grotesque", "Inter", sans-serif;
+      --font-body: "Inter", sans-serif;
     }
 
     :root[data-theme="dark"] {
-      --bg: #111b24;
-      --bg-2: #162430;
-      --surface: rgba(23, 33, 43, 0.92);
-      --surface-strong: #1b2b38;
-      --ink: #edf4f9;
-      --muted: #9bb0bf;
-      --line: #2a3c4d;
-      --shadow: 0 18px 46px rgba(0, 0, 0, 0.24);
-      --accent: #67b7d8;
-      --accent-strong: #8dd2ed;
-      --accent-soft: #1b394f;
-      --now: rgba(188, 157, 61, 0.25);
-      --hi: #ff8e85;
-      --mid: #e7ba5b;
-      --lo: #75d7a1;
-      --success: #7ce0af;
+      --bg: #0f1b28;
+      --bg-2: #152533;
+      --panel: rgba(19, 31, 42, 0.9);
+      --panel-strong: #192d3d;
+      --ink: #edf6ff;
+      --muted: #a2b6c7;
+      --line: #2a4257;
+      --accent: #71c2df;
+      --accent-2: #93d8f0;
+      --accent-soft: rgba(113,194,223,0.18);
+      --success: #7ed6a8;
+      --warning: #edc77b;
+      --danger: #ff8e8e;
+      --shadow: 0 22px 48px rgba(0,0,0,0.25);
       color-scheme: dark;
     }
 
@@ -55,32 +52,30 @@
     body {
       margin: 0;
       min-height: 100vh;
+      font-family: var(--font-body);
       background:
-        radial-gradient(circle at top left, rgba(35, 109, 141, 0.12), transparent 32%),
+        radial-gradient(circle at top left, rgba(31, 111, 143, 0.12), transparent 30%),
         linear-gradient(180deg, var(--bg), var(--bg-2));
       color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 15px;
-      line-height: 1.4;
       padding: 28px 16px 52px;
     }
     [hidden] { display: none !important; }
 
     .wrap {
-      max-width: 1100px;
+      max-width: 1160px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 18px;
     }
 
-    .topbar {
-      background: var(--surface);
+    .top {
+      background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 20px 18px;
-      backdrop-filter: blur(12px);
+      padding: 20px 18px 18px;
+      backdrop-filter: blur(10px);
     }
 
     header {
@@ -88,23 +83,22 @@
       flex-wrap: wrap;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 12px 24px;
+      gap: 18px;
     }
 
     h1 {
       margin: 0;
       font-family: var(--font-display);
-      font-size: clamp(28px, 5vw, 42px);
-      line-height: 1.02;
-      letter-spacing: -0.02em;
-      text-wrap: balance;
+      letter-spacing: -0.04em;
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1;
     }
 
     .dateline {
       margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 0.96rem;
+      font-size: .96rem;
       text-transform: capitalize;
+      color: var(--muted);
     }
 
     .controls {
@@ -120,25 +114,26 @@
     }
 
     .btn {
-      background: var(--surface-strong);
-      color: var(--ink);
+      appearance: none;
       border: 1px solid var(--line);
-      border-radius: 10px;
+      background: var(--panel-strong);
+      color: var(--ink);
+      border-radius: 12px;
       padding: 9px 13px;
       min-height: 40px;
       cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform .15s ease, border-color .2s ease, box-shadow .2s ease;
     }
 
     .btn:hover {
       border-color: var(--accent);
-      box-shadow: 0 8px 18px rgba(35, 109, 141, 0.08);
+      box-shadow: 0 10px 20px rgba(31, 111, 143, 0.08);
     }
 
     .btn:active { transform: translateY(1px); }
 
     .btn.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: white;
       border-color: transparent;
       font-weight: 700;
@@ -147,39 +142,59 @@
     .btn.soft {
       background: var(--accent-soft);
       border-color: transparent;
-      color: var(--accent-strong);
-      font-weight: 600;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      width: 40px;
+      min-width: 40px;
+      padding: 0;
+      font-size: 1.05rem;
     }
 
     input[type="date"] {
-      background: var(--surface-strong);
       border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 8px 10px;
+      background: var(--panel-strong);
       min-height: 40px;
-    }
-
-    :focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
+      border-radius: 12px;
+      padding: 8px 10px;
     }
 
     .summary {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 18px;
       align-items: center;
+      gap: 12px 18px;
       justify-content: space-between;
+      padding-top: 14px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 0.94rem;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      flex: 1 1 auto;
+    }
+
+    .chip {
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-weight: 600;
+      color: var(--ink);
     }
 
     .bar {
-      flex: 1 1 220px;
-      max-width: 320px;
-      height: 8px;
-      border-radius: 999px;
+      flex: 1 1 240px;
+      max-width: 360px;
+      height: 10px;
       background: var(--line);
+      border-radius: 999px;
       overflow: hidden;
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
     }
@@ -188,21 +203,22 @@
       display: block;
       height: 100%;
       width: 0;
-      background: linear-gradient(90deg, var(--lo), var(--success));
-      transition: width 0.25s ease;
+      background: linear-gradient(90deg, var(--success), #7ad1bc);
+      transition: width .25s ease;
     }
 
     .remind {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      min-height: 40px;
-      cursor: pointer;
-      color: var(--ink);
-      padding: 7px 10px;
-      border-radius: 10px;
-      background: var(--surface-strong);
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--panel-strong);
       border: 1px solid var(--line);
+      color: var(--ink);
+      cursor: pointer;
+      min-height: 40px;
+      user-select: none;
     }
 
     .remind input {
@@ -212,17 +228,33 @@
       margin: 0;
     }
 
-    .sheet {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      overflow: hidden;
+    .alert {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 700;
       box-shadow: var(--shadow);
+    }
+
+    .alert .btn { color: var(--ink); }
+
+    .sheet {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
     .head, .row {
       display: grid;
-      grid-template-columns: 96px minmax(0, 1.5fr) minmax(0, 1.25fr) 112px 76px minmax(0, 1.2fr);
+      grid-template-columns: 96px minmax(0,1.5fr) minmax(0,1.25fr) 120px 76px minmax(0,1.2fr);
       gap: 0 10px;
       align-items: center;
       padding: 8px 14px;
@@ -230,26 +262,28 @@
 
     .head {
       background: var(--accent-soft);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
       color: var(--muted);
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       padding-block: 12px;
     }
 
     .row {
       border-top: 1px solid var(--line);
-      transition: background 0.2s ease;
+      transition: background .2s ease;
     }
 
-    .row.now { background: var(--now); }
+    .row.now {
+      background: rgba(247, 210, 121, 0.18);
+    }
 
     .time {
       font-family: var(--font-display);
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
       font-size: 17px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
       display: flex;
       align-items: baseline;
       gap: 6px;
@@ -257,16 +291,15 @@
 
     .time small {
       font-family: var(--font-body);
-      font-weight: 500;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
+      font-weight: 600;
     }
 
     .row input[type="text"], .row select {
       width: 100%;
-      min-width: 0;
-      background: transparent;
       border: 1px solid transparent;
+      background: transparent;
       border-radius: 8px;
       padding: 8px 9px;
       min-height: 38px;
@@ -279,30 +312,30 @@
 
     .row input[type="text"]:focus, .row select:focus {
       border-color: var(--accent);
-      background: var(--surface-strong);
+      background: var(--panel-strong);
     }
 
     .row select { appearance: auto; cursor: pointer; }
-    .row select[data-p="Haute"] { color: var(--hi); font-weight: 700; }
-    .row select[data-p="Moyenne"] { color: var(--mid); font-weight: 700; }
-    .row select[data-p="Basse"] { color: var(--lo); font-weight: 700; }
+    .row select[data-p="Haute"] { color: var(--danger); font-weight:700; }
+    .row select[data-p="Moyenne"] { color: var(--warning); font-weight:700; }
+    .row select[data-p="Basse"] { color: var(--success); font-weight:700; }
 
     .done {
       display: flex;
       align-items: center;
       gap: 6px;
-      cursor: pointer;
       min-height: 38px;
-      padding-inline: 4px;
       user-select: none;
+      cursor: pointer;
+      padding-inline: 4px;
     }
 
     .done input {
       width: 20px;
       height: 20px;
-      accent-color: var(--lo);
-      cursor: pointer;
+      accent-color: var(--success);
       margin: 0;
+      cursor: pointer;
     }
 
     .row.is-done .a {
@@ -313,41 +346,26 @@
     .foot {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 16px;
       justify-content: space-between;
+      gap: 10px 14px;
       align-items: center;
       color: var(--muted);
       font-size: 13px;
+      padding-top: 4px;
     }
 
     .status {
       min-height: 1.2em;
-      font-weight: 600;
-    }
-
-    .foot-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .alert {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px 16px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      color: white;
-      border-radius: 12px;
-      padding: 12px 16px;
       font-weight: 700;
-      box-shadow: var(--shadow);
     }
 
-    .alert .btn { color: var(--ink); }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-    @media (max-width: 760px) {
+    @media (max-width: 780px) {
       .head { display: none; }
       .row {
         grid-template-columns: 1fr auto auto;
@@ -366,58 +384,79 @@
       .row .l { grid-area: l; }
       .row .n { grid-area: n; }
       .row input[type="text"], .row select { border-color: var(--line); }
+      .stats { width: 100%; }
+      .bar { max-width: none; }
       .summary { align-items: stretch; }
-      .remind { flex: 1; justify-content: center; }
+      .remind { flex: 1 1 100%; justify-content: center; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .bar i, .btn { transition: none; }
     }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .alert, .controls, .remind, .actions, .summary .chip, .summary .bar, #themeToggle { display: none !important; }
+      .top, .sheet { box-shadow: none; border-color: #ccc; }
+      .wrap { max-width: 100%; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="topbar">
+    <div class="top">
       <header>
         <div>
           <h1>Planning du jour</h1>
           <p class="dateline" id="dateline"></p>
         </div>
         <div class="controls">
-          <button class="btn" id="prev" type="button" aria-label="Jour précédent">‹</button>
+          <button type="button" class="btn icon-btn" id="prev" aria-label="Jour précédent">‹</button>
           <input type="date" id="date" aria-label="Choisir le jour">
-          <button class="btn" id="next" type="button" aria-label="Jour suivant">›</button>
-          <button class="btn primary" id="today" type="button">Aujourd’hui</button>
-          <button class="btn" id="themeToggle" type="button" aria-label="Changer de thème">🌙</button>
+          <button type="button" class="btn icon-btn" id="next" aria-label="Jour suivant">›</button>
+          <button type="button" class="btn primary" id="today">Aujourd’hui</button>
+          <button type="button" class="btn" id="themeToggle" aria-label="Changer de thème">🌙</button>
+          <button type="button" class="btn soft" id="printBtn">Imprimer</button>
         </div>
       </header>
+
+      <div class="summary">
+        <div class="stats">
+          <span class="chip" id="count">0 tâche</span>
+          <span class="chip" id="nextWindow">Prochain créneau : —</span>
+        </div>
+        <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+        <label class="remind"><input type="checkbox" id="remind"> Rappel à chaque changement d’heure</label>
+      </div>
     </div>
 
     <div class="alert" id="alert" role="alert" hidden>
       <span id="alerttext"></span>
-      <button class="btn" id="alertok" type="button">OK</button>
-    </div>
-
-    <div class="summary">
-      <span id="count">Aucune tâche pour ce jour</span>
-      <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
-      <label class="remind"><input type="checkbox" id="remind"> Me prévenir à chaque changement d’heure</label>
+      <button type="button" class="btn" id="alertok">OK</button>
     </div>
 
     <div class="sheet">
       <div class="head" aria-hidden="true">
-        <span>Heure</span><span>Activité / tâche</span><span>Lieu / avec qui</span><span>Priorité</span><span>Fait</span><span>Notes</span>
+        <span>Heure</span>
+        <span>Activité / tâche</span>
+        <span>Lieu / avec qui</span>
+        <span>Priorité</span>
+        <span>Fait</span>
+        <span>Notes</span>
       </div>
       <div id="rows"></div>
     </div>
 
     <div class="foot">
       <span class="status" id="status" role="status" aria-live="polite"></span>
-      <div class="foot-actions">
-        <button class="btn soft" id="addSlot" type="button">+ Ajouter un créneau</button>
-        <button class="btn" id="removeSlot" type="button">− Retirer le dernier</button>
-        <button class="btn" id="clear" type="button">Vider la journée</button>
+      <div class="actions">
+        <button type="button" class="btn soft" id="addSlot">+ Ajouter un créneau</button>
+        <button type="button" class="btn" id="removeSlot">− Retirer le dernier</button>
+        <button type="button" class="btn" id="clear">Vider la journée</button>
       </div>
     </div>
   </div>
@@ -426,35 +465,33 @@
     (function () {
       var START = 6;
       var END = 23;
-      var rowsEl = document.getElementById('rows');
-      var dateEl = document.getElementById('date');
-      var statusEl = document.getElementById('status');
       var dateKey = keyOf(new Date());
       var lastHour = new Date().getHours();
       var reminderEnabled = localStorage.getItem('planning:remind') === '1';
       var audioCtx = null;
       var wakeLock = null;
-      var themeToggleBtn = document.getElementById('themeToggle');
 
-      function pad(n) { return String(n).padStart(2, '0'); }
+      function pad(n) {
+        return String(n).padStart(2, '0');
+      }
+
       function keyOf(date) {
         return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
       }
+
       function parseKey(key) {
         var p = key.split('-');
         return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
       }
-      function byId(id) { return document.getElementById(id); }
 
-      function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('planning:theme', theme);
-        themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-        themeToggleBtn.title = theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre';
+      function byId(id) {
+        return document.getElementById(id);
       }
 
       function buildRows() {
+        var rowsEl = byId('rows');
         rowsEl.innerHTML = '';
+
         for (var h = START; h <= END; h++) {
           var row = document.createElement('div');
           row.className = 'row';
@@ -476,13 +513,16 @@
         }
       }
 
-      function refresh() {
+      function refreshVisuals() {
         var total = 0;
         var done = 0;
+        var nextText = 'Prochain créneau : —';
 
         for (var h = START; h <= END; h++) {
-          var row = rowsEl.children[h - START];
+          var row = byId('rows').children[h - START];
           var isDone = byId('d-' + h).checked;
+          if (!row) continue;
+
           row.classList.toggle('is-done', isDone);
           byId('p-' + h).dataset.p = byId('p-' + h).value;
 
@@ -490,13 +530,17 @@
             total += 1;
             if (isDone) done += 1;
           }
+
+          if (!byId('a-' + h).value.trim() && !isDone) {
+            if (nextText === 'Prochain créneau : —') {
+              nextText = 'Prochain créneau : ' + pad(h) + 'h';
+            }
+          }
         }
 
-        byId('count').textContent = total === 0
-          ? 'Aucune tâche pour ce jour'
-          : done + ' sur ' + total + (total > 1 ? ' tâches faites' : ' tâche faite');
-
+        byId('count').textContent = total === 0 ? '0 tâche' : done + ' / ' + total + ' faites';
         byId('barfill').style.width = total ? Math.round((done / total) * 100) + '%' : '0%';
+        byId('nextWindow').textContent = nextText;
       }
 
       function getData() {
@@ -526,11 +570,11 @@
           byId('d-' + h).checked = !!item.d;
           byId('n-' + h).value = item.n || '';
         }
-        refresh();
+        refreshVisuals();
       }
 
       function showDate() {
-        dateEl.value = dateKey;
+        byId('date').value = dateKey;
         byId('dateline').textContent = parseKey(dateKey).toLocaleDateString('fr-FR', {
           weekday: 'long',
           day: 'numeric',
@@ -543,33 +587,37 @@
       function markNow() {
         var now = new Date();
         var isToday = keyOf(now) === dateKey;
+        var rows = byId('rows').children;
+
         for (var h = START; h <= END; h++) {
-          rowsEl.children[h - START].classList.toggle('now', isToday && now.getHours() === h);
+          if (rows[h - START]) {
+            rows[h - START].classList.toggle('now', isToday && now.getHours() === h);
+          }
         }
       }
 
       function setStatus(message) {
-        statusEl.textContent = message || '';
+        byId('status').textContent = message || '';
       }
 
-      function storageKey(date) {
-        return 'planning:' + date;
+      function storageKey(dayKey) {
+        return 'planning:' + dayKey;
       }
 
-      function loadDay(key) {
+      function loadDay(dayKeyToLoad) {
         try {
-          var raw = localStorage.getItem(storageKey(key));
+          var raw = localStorage.getItem(storageKey(dayKeyToLoad));
           return raw ? JSON.parse(raw) : {};
         } catch (e) {
           return {};
         }
       }
 
-      function saveDay(key, data) {
+      function saveDay(dayKeyToSave, data) {
         try {
-          localStorage.setItem(storageKey(key), JSON.stringify(data));
+          localStorage.setItem(storageKey(dayKeyToSave), JSON.stringify(data));
         } catch (e) {
-          // ignore
+          // ignore localStorage limits
         }
       }
 
@@ -579,7 +627,7 @@
       }
 
       function onInputChange() {
-        refresh();
+        refreshVisuals();
         setStatus('Modification en cours…');
         clearTimeout(window._saveTimer);
         window._saveTimer = setTimeout(persistNow, 300);
@@ -594,24 +642,24 @@
 
       function addSlot() {
         if (END >= 24) {
-          setStatus('Journée maximale atteinte');
+          setStatus('Plage maximale atteinte');
           return;
         }
         END += 1;
         buildRows();
         setData(loadDay(dateKey));
-        refresh();
+        refreshVisuals();
       }
 
       function removeSlot() {
         if (END <= START) {
-          setStatus('Impossible de supprimer le dernier créneau');
+          setStatus('Impossible de supprimer');
           return;
         }
         END -= 1;
         buildRows();
         setData(loadDay(dateKey));
-        refresh();
+        refreshVisuals();
       }
 
       function ensureAudio() {
@@ -623,7 +671,7 @@
           if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume();
           }
-        } catch (e) { /* ignore */ }
+        } catch (e) {}
       }
 
       function beep() {
@@ -642,20 +690,23 @@
             osc.start(t + offset);
             osc.stop(t + offset + 0.22);
           });
-        } catch (e) { /* ignore */ }
+        } catch (e) {}
       }
 
       function announceHour(hour) {
-        if (!byId('a-' + hour)) return;
-        var currentTask = byId('a-' + hour).value.trim();
-        var nextTask = byId('a-' + (hour + 1)) ? byId('a-' + (hour + 1)).value.trim() : '';
-        var text = 'Il est ' + pad(hour) + 'h. ' + (currentTask ? 'À faire maintenant : ' + currentTask + '.' : 'Rien de prévu sur ce créneau.');
-        if (nextTask) text += ' Ensuite à ' + pad(hour + 1) + 'h : ' + nextTask + '.';
+        var currentTask = byId('a-' + hour);
+        if (!currentTask) return;
 
-        byId('alerttext').textContent = text;
+        var taskText = currentTask.value.trim();
+        var nextEl = byId('a-' + (hour + 1));
+        var nextText = nextEl ? nextEl.value.trim() : '';
+        var message = 'Il est ' + pad(hour) + 'h. ' + (taskText ? 'À faire maintenant : ' + taskText + '.' : 'Rien de prévu sur ce créneau.');
+        if (nextText) message += ' Ensuite à ' + pad(hour + 1) + 'h : ' + nextText + '.';
+
+        byId('alerttext').textContent = message;
         byId('alert').hidden = false;
         beep();
-        try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+        try { if (navigator.vibrate) navigator.vibrate([180, 80, 180]); } catch (e) {}
       }
 
       function keepAwake() {
@@ -683,32 +734,40 @@
         }
       }
 
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('planning:theme', theme);
+        byId('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+        byId('themeToggle').title = theme === 'dark' ? 'Mode clair' : 'Mode sombre';
+      }
+
       function initTheme() {
-        var saved = localStorage.getItem('planning:theme');
-        var theme = saved || 'light';
-        applyTheme(theme);
-        themeToggleBtn.addEventListener('click', function () {
+        var saved = localStorage.getItem('planning:theme') || 'light';
+        applyTheme(saved);
+        byId('themeToggle').addEventListener('click', function () {
           var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
           applyTheme(current);
         });
       }
 
-      rowsEl.addEventListener('input', onInputChange);
-      rowsEl.addEventListener('change', onInputChange);
-      dateEl.addEventListener('change', function () {
-        if (dateEl.value) goTo(dateEl.value);
+      byId('rows').addEventListener('input', onInputChange);
+      byId('rows').addEventListener('change', onInputChange);
+      byId('date').addEventListener('change', function () {
+        if (byId('date').value) {
+          goTo(byId('date').value);
+        }
       });
 
       byId('prev').addEventListener('click', function () {
-        var d = parseKey(dateKey);
-        d.setDate(d.getDate() - 1);
-        goTo(keyOf(d));
+        var day = parseKey(dateKey);
+        day.setDate(day.getDate() - 1);
+        goTo(keyOf(day));
       });
 
       byId('next').addEventListener('click', function () {
-        var d = parseKey(dateKey);
-        d.setDate(d.getDate() + 1);
-        goTo(keyOf(d));
+        var day = parseKey(dateKey);
+        day.setDate(day.getDate() + 1);
+        goTo(keyOf(day));
       });
 
       byId('today').addEventListener('click', function () {
@@ -717,6 +776,10 @@
 
       byId('addSlot').addEventListener('click', addSlot);
       byId('removeSlot').addEventListener('click', removeSlot);
+
+      byId('printBtn').addEventListener('click', function () {
+        window.print();
+      });
 
       var clearTimer = null;
       byId('clear').addEventListener('click', function () {
@@ -742,9 +805,9 @@
         byId('alert').hidden = true;
       });
 
-      document.getElementById('remind').checked = reminderEnabled;
-      document.getElementById('remind').addEventListener('change', function () {
-        reminderEnabled = document.getElementById('remind').checked;
+      byId('remind').checked = reminderEnabled;
+      byId('remind').addEventListener('change', function () {
+        reminderEnabled = byId('remind').checked;
         localStorage.setItem('planning:remind', reminderEnabled ? '1' : '0');
 
         if (reminderEnabled) {
@@ -770,10 +833,10 @@
       buildRows();
       showDate();
       setData(loadDay(dateKey));
-      if (reminderEnabled) {
-        document.getElementById('remind').checked = true;
-      }
     })();
   </script>
 </body>
 </html>
+
+
+
