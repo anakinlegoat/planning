@@ -1,4 +1,3 @@
-google-site-verification: googledd18d0ee462541db.html
 <!doctype html>
 <html lang="fr">
 <head>
