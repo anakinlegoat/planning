@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta name="google-site-verification" content="w1U0l1_PXGs2Er8iijzHVaNJI3QARB5aqhxnMIpRirs" />
+  google-site-verification: googledd18d0ee462541db.html
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Planning du jour premium, hour by hour, avec rappel automatique et impression." />
