@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Planning du jour premium, heure par heure, avec rappel automatique, thèmes et barre de progression." />
+  <meta name="description" content="Planning du jour premium, heure par heure, avec rappel automatique, vue semaine et barre de progression." />
   <title>Planning premium</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -132,26 +132,11 @@
 
     .btn:active { transform: translateY(1px); }
 
-    .btn.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      border-color: transparent;
-      font-weight: 700;
-    }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; border-color: transparent; font-weight: 700; }
+    .btn.soft { background: var(--accent-soft); border-color: transparent; color: var(--accent); font-weight: 700; }
+    .btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 800; }
 
-    .btn.soft {
-      background: var(--accent-soft);
-      border-color: transparent;
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    .icon-btn {
-      width: 40px;
-      min-width: 40px;
-      padding: 0;
-      font-size: 1.05rem;
-    }
+    .icon-btn { width: 40px; min-width: 40px; padding: 0; font-size: 1.05rem; }
 
     input[type="date"] {
       border: 1px solid var(--line);
@@ -236,10 +221,6 @@
       background: linear-gradient(90deg, var(--success), #7bd6b8, var(--accent));
       box-shadow: 0 0 18px rgba(46, 143, 103, 0.3);
       transition: width 0.4s ease;
-    }
-
-    .bar {
-      display: none;
     }
 
     .remind {
@@ -341,15 +322,8 @@
       color: var(--ink);
     }
 
-    .row input[type="text"]:hover, .row select:hover {
-      border-color: var(--line);
-    }
-
-    .row input[type="text"]:focus, .row select:focus {
-      border-color: var(--accent);
-      background: var(--panel-strong);
-    }
-
+    .row input[type="text"]:hover, .row select:hover { border-color: var(--line); }
+    .row input[type="text"]:focus, .row select:focus { border-color: var(--accent); background: var(--panel-strong); }
     .row select { appearance: auto; cursor: pointer; }
     .row select[data-p="Haute"] { color: var(--danger); font-weight:700; }
     .row select[data-p="Moyenne"] { color: var(--warning); font-weight:700; }
@@ -378,6 +352,82 @@
       color: var(--muted);
     }
 
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(140px, 1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .week-day {
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 10px;
+      min-height: 220px;
+    }
+
+    .week-day.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(31,111,143,0.10);
+    }
+
+    .week-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .week-date {
+      color: var(--ink);
+      font-size: 1.1rem;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .week-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .week-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 9px;
+      background: var(--accent-soft);
+      border-radius: 10px;
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .week-item strong {
+      min-width: 42px;
+      color: var(--accent);
+      font-weight: 800;
+      font-family: var(--font-display);
+    }
+
+    .week-empty {
+      padding: 12px 8px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 12px;
+    }
+
     .foot {
       display: flex;
       flex-wrap: wrap;
@@ -398,6 +448,10 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    @media (max-width: 980px) {
+      .week-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
     }
 
     @media (max-width: 780px) {
@@ -423,6 +477,7 @@
       .progress-panel { max-width: none; }
       .summary { align-items: stretch; }
       .remind { flex: 1 1 100%; justify-content: center; }
+      .week-grid { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -431,10 +486,7 @@
     }
 
     @media print {
-      body {
-        background: white;
-        padding: 0;
-      }
+      body { background: white; padding: 0; }
       .alert, .controls, .remind, .actions, .chip, #themeToggle, .progress-panel { display: none !important; }
       .top, .sheet { box-shadow: none; border-color: #ccc; }
       .wrap { max-width: 100%; }
@@ -456,6 +508,8 @@
           <button type="button" class="btn primary" id="today">Aujourd’hui</button>
           <button type="button" class="btn" id="themeToggle" aria-label="Changer de thème">🌙</button>
           <button type="button" class="btn soft" id="printBtn">Imprimer</button>
+          <button type="button" class="btn active view-btn" data-view="day">Jour</button>
+          <button type="button" class="btn view-btn" data-view="week">Semaine</button>
         </div>
       </header>
 
@@ -494,6 +548,7 @@
         <span>Notes</span>
       </div>
       <div id="rows"></div>
+      <div id="weekView" class="week-grid" hidden></div>
     </div>
 
     <div class="foot">
@@ -515,6 +570,7 @@
       var reminderEnabled = localStorage.getItem('planning:remind') === '1';
       var audioCtx = null;
       var wakeLock = null;
+      var viewMode = 'day';
 
       function pad(n) {
         return String(n).padStart(2, '0');
@@ -529,8 +585,18 @@
         return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
       }
 
-      function byId(id) {
-        return document.getElementById(id);
+      function byId(id) { return document.getElementById(id); }
+
+      function startOfWeek(date) {
+        var d = new Date(date);
+        var day = (d.getDay() + 6) % 7;
+        d.setDate(d.getDate() - day);
+        d.setHours(0,0,0,0);
+        return d;
+      }
+
+      function niceDayLabel(d) {
+        return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
       }
 
       function buildRows() {
@@ -621,12 +687,21 @@
 
       function showDate() {
         byId('date').value = dateKey;
-        byId('dateline').textContent = parseKey(dateKey).toLocaleDateString('fr-FR', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        });
+
+        if (viewMode === 'week') {
+          var weekStart = startOfWeek(parseKey(dateKey));
+          var weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          byId('dateline').textContent = 'Semaine du ' + weekStart.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + ' au ' + weekEnd.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+        } else {
+          byId('dateline').textContent = parseKey(dateKey).toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+        }
+
         markNow();
       }
 
@@ -662,9 +737,7 @@
       function saveDay(dayKeyToSave, data) {
         try {
           localStorage.setItem(storageKey(dayKeyToSave), JSON.stringify(data));
-        } catch (e) {
-          // ignore localStorage limits
-        }
+        } catch (e) {}
       }
 
       function persistNow() {
@@ -683,6 +756,7 @@
         dateKey = key;
         showDate();
         setData(loadDay(key));
+        renderWeekView();
         setStatus('');
       }
 
@@ -796,35 +870,91 @@
         });
       }
 
+      function renderWeekView() {
+        var container = byId('weekView');
+        var start = startOfWeek(parseKey(dateKey));
+        var html = '';
+
+        for (var i = 0; i < 7; i++) {
+          var current = new Date(start);
+          current.setDate(start.getDate() + i);
+          var key = keyOf(current);
+          var data = loadDay(key);
+          var items = [];
+
+          for (var h = START; h <= END; h++) {
+            var item = data['h' + h];
+            if (item && (item.a || item.l || item.p || item.d || item.n)) {
+              items.push({ hour: h, item: item });
+            }
+          }
+
+          html += '<div class="week-day' + (key === dateKey ? ' selected' : '') + '">';
+          html += '<div class="week-title"><span>' + current.toLocaleDateString('fr-FR', { weekday: 'short' }) + '</span><span class="week-date">' + current.getDate() + '</span></div>';
+          if (!items.length) {
+            html += '<div class="week-empty">Vide</div>';
+          } else {
+            html += '<ul class="week-list">';
+            for (var j = 0; j < items.length; j++) {
+              var entry = items[j];
+              var text = entry.item.a || 'Tâche';
+              html += '<li class="week-item"><strong>' + pad(entry.hour) + 'h</strong><span>' + text + '</span></li>';
+            }
+            html += '</ul>';
+          }
+          html += '</div>';
+        }
+
+        container.innerHTML = html;
+      }
+
+      function renderCurrentView() {
+        var isDay = viewMode === 'day';
+        byId('rows').hidden = !isDay;
+        byId('weekView').hidden = isDay;
+        document.querySelectorAll('.view-btn').forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.view === viewMode);
+        });
+        if (!isDay) {
+          renderWeekView();
+        }
+      }
+
       byId('rows').addEventListener('input', onInputChange);
       byId('rows').addEventListener('change', onInputChange);
-      byId('date').addEventListener('change', function () {
-        if (byId('date').value) {
-          goTo(byId('date').value);
-        }
-      });
+      byId('date').addEventListener('change', function () { if (byId('date').value) goTo(byId('date').value); });
 
       byId('prev').addEventListener('click', function () {
         var day = parseKey(dateKey);
-        day.setDate(day.getDate() - 1);
+        if (viewMode === 'week') {
+          day.setDate(day.getDate() - 7);
+        } else {
+          day.setDate(day.getDate() - 1);
+        }
         goTo(keyOf(day));
       });
 
       byId('next').addEventListener('click', function () {
         var day = parseKey(dateKey);
-        day.setDate(day.getDate() + 1);
+        if (viewMode === 'week') {
+          day.setDate(day.getDate() + 7);
+        } else {
+          day.setDate(day.getDate() + 1);
+        }
         goTo(keyOf(day));
       });
 
-      byId('today').addEventListener('click', function () {
-        goTo(keyOf(new Date()));
-      });
-
+      byId('today').addEventListener('click', function () { goTo(keyOf(new Date())); });
       byId('addSlot').addEventListener('click', addSlot);
       byId('removeSlot').addEventListener('click', removeSlot);
+      byId('printBtn').addEventListener('click', function () { window.print(); });
 
-      byId('printBtn').addEventListener('click', function () {
-        window.print();
+      document.querySelectorAll('.view-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          viewMode = btn.dataset.view;
+          renderCurrentView();
+          showDate();
+        });
       });
 
       var clearTimer = null;
@@ -847,9 +977,7 @@
         }, 3500);
       });
 
-      byId('alertok').addEventListener('click', function () {
-        byId('alert').hidden = true;
-      });
+      byId('alertok').addEventListener('click', function () { byId('alert').hidden = true; });
 
       byId('remind').checked = reminderEnabled;
       byId('remind').addEventListener('change', function () {
@@ -878,8 +1006,11 @@
       initTheme();
       buildRows();
       showDate();
+      renderCurrentView();
       setData(loadDay(dateKey));
     })();
   </script>
 </body>
 </html>
+
+
