@@ -244,6 +244,38 @@
       margin: 0;
     }
 
+    .quick-add {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .quick-add input[type="text"] {
+      flex: 1 1 220px;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: var(--ink);
+    }
+
+    .quick-add select {
+      min-width: 140px;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: var(--ink);
+    }
+
     .alert {
       display: flex;
       flex-wrap: wrap;
@@ -478,6 +510,8 @@
       .summary { align-items: stretch; }
       .remind { flex: 1 1 100%; justify-content: center; }
       .week-grid { grid-template-columns: 1fr; }
+      .quick-add { flex-direction: column; align-items: stretch; }
+      .quick-add input[type="text"], .quick-add select, .quick-add .btn { width: 100%; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -487,7 +521,7 @@
 
     @media print {
       body { background: white; padding: 0; }
-      .alert, .controls, .remind, .actions, .chip, #themeToggle, .progress-panel { display: none !important; }
+      .alert, .controls, .remind, .actions, .chip, #themeToggle, .progress-panel, .quick-add { display: none !important; }
       .top, .sheet { box-shadow: none; border-color: #ccc; }
       .wrap { max-width: 100%; }
     }
@@ -530,6 +564,17 @@
         </div>
 
         <label class="remind"><input type="checkbox" id="remind"> Rappel à chaque changement d’heure</label>
+      </div>
+
+      <div class="quick-add" id="quickAddBox">
+        <input type="text" id="quickTaskInput" placeholder="Ajouter une tâche rapide..." aria-label="Ajouter une tâche rapide">
+        <select id="quickPrioritySelect" aria-label="Priorité de la tâche rapide">
+          <option value="">Priorité</option>
+          <option value="Haute">Haute</option>
+          <option value="Moyenne">Moyenne</option>
+          <option value="Basse">Basse</option>
+        </select>
+        <button type="button" class="btn primary" id="quickAddBtn">Ajouter</button>
       </div>
     </div>
 
@@ -593,10 +638,6 @@
         d.setDate(d.getDate() - day);
         d.setHours(0,0,0,0);
         return d;
-      }
-
-      function niceDayLabel(d) {
-        return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
       }
 
       function buildRows() {
@@ -782,6 +823,48 @@
         refreshVisuals();
       }
 
+      function quickAddTask() {
+        var input = byId('quickTaskInput');
+        var priority = byId('quickPrioritySelect').value;
+        var text = input.value.trim();
+
+        if (!text) {
+          setStatus('Écris une tâche à ajouter');
+          input.focus();
+          return;
+        }
+
+        var startHour = new Date().getHours();
+        var slot = -1;
+
+        for (var h = START; h <= END; h++) {
+          var idA = 'a-' + h;
+          var current = byId(idA).value.trim();
+          if (!current) {
+            slot = h;
+            break;
+          }
+        }
+
+        if (slot === -1) {
+          slot = Math.max(START, Math.min(END, startHour || 9));
+          if (!byId('a-' + slot)) {
+            slot = START;
+          }
+        }
+
+        byId('a-' + slot).value = text;
+        if (priority) byId('p-' + slot).value = priority;
+        byId('n-' + slot).value = 'Ajoutée rapidement';
+
+        refreshVisuals();
+        persistNow();
+        input.value = '';
+        byId('quickPrioritySelect').value = '';
+        input.focus();
+        setStatus('Tâche ajoutée');
+      }
+
       function ensureAudio() {
         try {
           if (!audioCtx) {
@@ -948,6 +1031,10 @@
       byId('addSlot').addEventListener('click', addSlot);
       byId('removeSlot').addEventListener('click', removeSlot);
       byId('printBtn').addEventListener('click', function () { window.print(); });
+      byId('quickAddBtn').addEventListener('click', quickAddTask);
+      byId('quickTaskInput').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') quickAddTask();
+      });
 
       document.querySelectorAll('.view-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -1012,5 +1099,3 @@
   </script>
 </body>
 </html>
-
-
