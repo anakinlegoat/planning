@@ -101,11 +101,20 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
 .days{display:flex;flex-wrap:wrap;gap:6px}
 .days label{position:relative;display:inline-flex}
 .days input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
-.days span{min-width:48px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;padding-inline:10px}
+.days span{min-width:48px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;padding-inline:6px}
 .days input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .days input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
 .routine-actions{display:flex;flex-wrap:wrap;gap:8px}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+
+/* Week view additions */
+.week-grid{display:grid;grid-template-columns:96px repeat(7,minmax(120px,1fr));gap:8px;margin-top:12px}
+.week-header{background:transparent;border:none;padding:10px;font-weight:600;text-align:center;color:var(--muted)}
+.week-time{display:flex;align-items:center;justify-content:center;color:var(--muted);padding:8px}
+.week-cell{min-height:64px;padding:8px;border-radius:8px;background:var(--surface);border:1px solid var(--line);white-space:pre-wrap}
+.week-cell[contenteditable]{outline:none}
+.week-cell:focus{box-shadow:0 0 0 3px rgba(28,110,140,0.12);border-color:var(--accent)}
+
 </style>
 </head>
 <body>
@@ -120,6 +129,13 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
       <input type="date" id="date" aria-label="Choisir le jour">
       <button class="btn" id="next" type="button" aria-label="Jour suivant">›</button>
       <button class="btn primary" id="today" type="button">Aujourd’hui</button>
+      <!-- View toggle -->
+      <div style="display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden">
+        <button class="btn" id="viewDay" type="button" style="border-radius:0;padding:8px 10px;">Jour</button>
+        <button class="btn" id="viewWeek" type="button" style="border-radius:0;padding:8px 10px;">Semaine</button>
+      </div>
+      <!-- Theme toggle -->
+      <button class="btn" id="toggleTheme" type="button" aria-label="Basculer thème">🌙</button>
     </div>
   </header>
 
@@ -155,7 +171,14 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
     </div>
   </details>
 
-  <div class="sheet">
+  <!-- Week view container (hidden by default) -->
+  <div id="weekView" style="display:none;">
+    <div class="sheet">
+      <div id="weekGrid" class="week-grid"></div>
+    </div>
+  </div>
+
+  <div class="sheet" id="daySheet">
     <div class="head" aria-hidden="true">
       <span>Heure</span><span>Activité / tâche</span><span>Lieu / avec qui</span><span>Priorité</span><span>Fait</span><span>Notes</span>
     </div>
@@ -176,6 +199,7 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
   var dateEl=document.getElementById('date');
   var db=null, uid=null, touched=false, usingCloud=false;
   var timer=null, saving=false, pending=null;
+  var currentView='day'; // 'day' or 'week'
   function pad(n){return String(n).padStart(2,'0');}
   function keyOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
   function parseKey(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
@@ -198,7 +222,7 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
     rowsEl.appendChild(row);
   }
 
-  function $(id){return document.getElementById(id);}
+  function $(id){return document.getElementById(id);} 
   function getData(){
     var out={};
     for(var h=START;h<=END;h++){
@@ -246,7 +270,7 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
   /* ---------- storage ---------- */
   function localGet(k){try{var v=localStorage.getItem('planning:'+k);return v?JSON.parse(v):null;}catch(e){return null;}}
   function localSet(k,v){try{localStorage.setItem('planning:'+k,JSON.stringify(v));}catch(e){}}
-  function docRef(k){return db.doc('data/users/'+uid+'/'+k);}
+  function docRef(k){return db.doc('data/users/'+uid+'/'+k);} // keep existing cloud path
   async function load(k){
     if(db&&uid){
       try{
@@ -298,8 +322,20 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
   rowsEl.addEventListener('input',schedule);
   rowsEl.addEventListener('change',schedule);
   dateEl.addEventListener('change',function(){ if(dateEl.value) goTo(dateEl.value); });
-  $('prev').addEventListener('click',function(){var d=parseKey(dateKey);d.setDate(d.getDate()-1);goTo(keyOf(d));});
-  $('next').addEventListener('click',function(){var d=parseKey(dateKey);d.setDate(d.getDate()+1);goTo(keyOf(d));});
+  $('prev').addEventListener('click',function(){
+    if(currentView==='day'){
+      var d=parseKey(dateKey);d.setDate(d.getDate()-1);goTo(keyOf(d));
+    }else{
+      var d=parseKey(dateKey);d.setDate(d.getDate()-7);goTo(keyOf(d));
+    }
+  });
+  $('next').addEventListener('click',function(){
+    if(currentView==='day'){
+      var d=parseKey(dateKey);d.setDate(d.getDate()+1);goTo(keyOf(d));
+    }else{
+      var d=parseKey(dateKey);d.setDate(d.getDate()+7);goTo(keyOf(d));
+    }
+  });
   $('today').addEventListener('click',function(){goTo(keyOf(new Date()));});
   var clearTimer=null;
   $('clear').addEventListener('click',function(){
@@ -487,11 +523,93 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
     reshow();
   });
 
+  /* ---------- Week view rendering & helpers ---------- */
+  function isoDate(d){return d.toISOString().slice(0,10);} 
+  function getWeekStart(date){var d=new Date(date);var day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);d.setHours(0,0,0,0);return d;}
+
+  function renderWeek(){
+    var container=document.getElementById('weekGrid');
+    container.innerHTML='';
+    var start=getWeekStart(parseKey(dateKey));
+    // corner
+    var corner=document.createElement('div'); corner.className='week-header'; corner.textContent=''; container.appendChild(corner);
+    // headers
+    for(var i=0;i<7;i++){ var d=new Date(start); d.setDate(start.getDate()+i); var h=document.createElement('div'); h.className='week-header'; h.textContent=new Intl.DateTimeFormat('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'}).format(d); container.appendChild(h);} 
+    // hours rows
+    for(var h=START;h<=END;h++){
+      var timeCell=document.createElement('div'); timeCell.className='week-time'; timeCell.textContent=pad(h)+':00'; container.appendChild(timeCell);
+      for(var i=0;i<7;i++){
+        var d=new Date(start); d.setDate(start.getDate()+i); var dateK=isoDate(d);
+        var key='h'+h;
+        var cell=document.createElement('div'); cell.className='week-cell'; cell.contentEditable=true; cell.dataset.date=dateK; cell.dataset.hour=h; 
+        // load activity a for that day/hour
+        var dayRows = localGet(dateK) || {};
+        var val = (dayRows[key] && dayRows[key].a) ? dayRows[key].a : '';
+        cell.textContent=val;
+        cell.addEventListener('blur',function(e){
+          var el=e.currentTarget; var dk=el.dataset.date; var hr=el.dataset.hour; var v=el.textContent.trim();
+          var rows = localGet(dk) || {};
+          var entry = rows['h'+hr] || {a:'',l:'',p:'',d:false,n:''};
+          entry.a = v;
+          // only save activity from week grid; other fields preserved if existed
+          rows['h'+hr]=entry;
+          try{ localSet(dk,rows); }catch(e){}
+          // attempt cloud save for that day
+          if(db&&uid){ try{ docRef(dk).set({rows:rows}); }catch(e){} }
+          // if currently viewing that day, refresh main table
+          if(dk===dateKey) { showDay(rows); setStatus('Enregistré'); }
+        });
+        container.appendChild(cell);
+      }
+    }
+    // update dateline to show week range
+    var startStr=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(start);
+    var end=new Date(start); end.setDate(start.getDate()+6);
+    var endStr=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(end);
+    $('dateline').textContent = startStr + ' – ' + endStr;
+  }
+
+  function showWeekView(){
+    document.getElementById('daySheet').style.display='none';
+    document.getElementById('weekView').style.display='block';
+    currentView='week';
+    document.getElementById('viewDay').classList.remove('btn','primary');
+    document.getElementById('viewWeek').classList.add('btn','primary');
+    renderWeek();
+  }
+  function showDayView(){
+    document.getElementById('daySheet').style.display='block';
+    document.getElementById('weekView').style.display='none';
+    currentView='day';
+    document.getElementById('viewWeek').classList.remove('btn','primary');
+    document.getElementById('viewDay').classList.add('btn','primary');
+    // restore dateline for single day
+    showDate();
+    reshow();
+  }
+
+  document.getElementById('viewWeek').addEventListener('click',function(){
+    showWeekView();
+  });
+  document.getElementById('viewDay').addEventListener('click',function(){
+    showDayView();
+  });
+
+  /* ---------- theme toggle (uses existing CSS variables) ---------- */
+  var themeKey='planning:theme';
+  function getTheme(){try{return localStorage.getItem(themeKey)||'system';}catch(e){return 'system';}}
+  function setTheme(t){try{ if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');$('toggleTheme').textContent='☀️';} else if(t==='light'){document.documentElement.setAttribute('data-theme','light');$('toggleTheme').textContent='🌙';} else {document.documentElement.removeAttribute('data-theme');$('toggleTheme').textContent=(window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches)?'☀️':'🌙';} localStorage.setItem(themeKey,t);}catch(e){}
+  function initTheme(){var t=getTheme(); setTheme(t);} 
+  $('toggleTheme').addEventListener('click',function(){ var cur=getTheme(); var next=(cur==='light'?'dark':(cur==='dark'?'system':'light')); setTheme(next); setStatus('Thème : '+next);} );
+
   /* ---------- start ---------- */
   showDate();
   routine=normRoutine(localGet('routine'));
   renderRoutine();
   showDay(localGet(dateKey));
+  // init theme
+  initTheme();
+
   (async function(){
     try{
       if(!window.claude||!window.claude.use) return;
@@ -505,6 +623,7 @@ input[type="date"]{background:var(--surface);border:1px solid var(--line);border
       }
     }catch(e){}
   })();
+
 })();
 </script>
 </body>
